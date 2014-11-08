@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/LinearLayoutHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/productDetailImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dip"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY" >
+        </ImageView>
+
+        <TextView
+            android:id="@+id/productDetailNameField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dip"
+            android:textColor="#000000"
+            android:textSize="26sp" >
+        </TextView>
+    </LinearLayout>
+
+    <GridLayout
+        android:id="@+id/gridLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:useDefaultMargins="true" >
+
+        <TextView
+            android:layout_column="0"
+            android:layout_gravity="left"
+            android:layout_row="0"
+            android:text="Product No:"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:typeface="sans" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/productDetailNoField"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:textColor="#000000"
+            android:typeface="sans" />
+
+        <TextView
+            android:layout_column="0"
+            android:layout_gravity="left"
+            android:layout_row="1"
+            android:text="Description:"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:typeface="sans" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/productDetailDescriptionField"
+            android:layout_column="1"
+            android:layout_row="1"
+            android:textColor="#000000"
+            android:typeface="sans" />
+
+        <TextView
+            android:layout_column="0"
+            android:layout_gravity="left"
+            android:layout_row="2"
+            android:text="Packaging:"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:typeface="sans" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/productDetailPackagingField"
+            android:layout_column="1"
+            android:layout_row="2"
+            android:textColor="#000000"
+            android:typeface="sans" />
+
+        <TextView
+            android:layout_column="0"
+            android:layout_gravity="left"
+            android:layout_row="3"
+            android:text="Quantity:"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:typeface="sans" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/productDetailQuantityField"
+            android:layout_column="1"
+            android:layout_row="3"
+            android:ems="10"
+            android:cursorVisible="true"
+            android:textCursorDrawable="@null"
+            android:textColor="#000000"
+            android:typeface="sans" 
+            android:inputType="number"
+            />
+    </GridLayout>
+
+    <Button
+        android:id="@+id/buttonAddOrder"
+        style="@style/ButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_margin="3dip"
+        android:background="@drawable/button_green"
+        android:text="@string/add_to_card" >
+    </Button>
+
+</LinearLayout>
