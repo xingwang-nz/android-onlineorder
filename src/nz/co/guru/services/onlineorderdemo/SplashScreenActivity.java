@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.view.Window;
 
 public class SplashScreenActivity extends Activity {
 
@@ -15,6 +16,11 @@ public class SplashScreenActivity extends Activity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+
+        // Sets Application to full screen by removing action bar
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
 
