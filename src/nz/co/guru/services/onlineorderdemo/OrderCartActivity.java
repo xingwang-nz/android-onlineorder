@@ -129,7 +129,7 @@ public class OrderCartActivity extends Activity {
                     dialog.dismiss();
 
                     final Intent intent = new Intent();
-                    intent.setData(Uri.parse(String.format("%s order(s) have been sent successfully.", ProductOrderManager.getNumberOfOrder())));
+                    intent.setData(Uri.parse(String.format("Order has been sent successfully.")));
                     setResult(RESULT_OK, intent);
                     finish();
 

@@ -26,6 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dip"
+            android:background="#ffffff"
             android:textColor="#000000"
             android:textSize="26sp" >
         </TextView>
@@ -106,6 +107,7 @@
             android:ems="10"
             android:cursorVisible="true"
             android:textCursorDrawable="@null"
+            android:background="#ffffff"
             android:textColor="#000000"
             android:typeface="sans" 
             android:inputType="number"

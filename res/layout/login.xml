@@ -13,7 +13,9 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="5dp"
         android:text="Username:"
-        android:textColor="#343434" />
+        android:textColor="#0E125E"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/login"
@@ -21,11 +23,12 @@
         android:layout_height="40dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:background="#ffffff"
         android:ems="10"
-        android:textColor="#343434"
-        android:textStyle="normal"
-        android:typeface="sans"
-        android:textCursorDrawable="@null">
+        android:inputType="text"
+        android:textColor="#000000"
+        android:textCursorDrawable="@null"
+        android:typeface="sans" >
 
         <requestFocus />
     </EditText>
@@ -36,8 +39,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:text="Password:"
-        android:textColor="#343434" 
-        />
+        android:textColor="#0E125E"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/password"
@@ -48,9 +52,8 @@
         android:layout_marginRight="10dp"
         android:cursorVisible="true"
         android:inputType="textPassword"
-        android:textColor="#343434"
+        android:textColor="#000000"
         android:textCursorDrawable="@null"
-        android:textStyle="normal"
         android:typeface="sans" />
 
     <Button

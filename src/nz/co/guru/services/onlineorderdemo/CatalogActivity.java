@@ -74,6 +74,7 @@ public class CatalogActivity extends Activity {
         });
 
         notifyOrdersChange();
+        // viewOrdersCartButton.setVisibility(View.GONE);
 
     }
 
