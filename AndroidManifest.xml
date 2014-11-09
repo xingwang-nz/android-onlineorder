@@ -13,7 +13,9 @@
         <activity
             android:name=".SplashScreenActivity"
             android:icon="@drawable/guru_logo"
-            android:label="GuruServices" >
+            android:label="GuruServices" 
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,7 +25,9 @@
         <activity
             android:name=".LoginActivity"
             android:icon="@drawable/guru_logo"
-            android:label="OnlineOrderDemo" >
+            android:label="OnlineOrderDemo" 
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
