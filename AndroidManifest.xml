@@ -9,24 +9,21 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/guru_logo"
-        android:label="@string/app_name"
-        >
-         <activity
+        android:label="@string/app_name" >
+        <activity
             android:name=".SplashScreenActivity"
             android:icon="@drawable/guru_logo"
-            android:label="GuruServices" 
-            >
+            android:label="GuruServices" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity
             android:name=".LoginActivity"
-            android:label="OnlineOrderDemo" 
-            android:icon="@drawable/guru_logo">
+            android:icon="@drawable/guru_logo"
+            android:label="OnlineOrderDemo" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -35,8 +32,8 @@
         </activity>
         <activity
             android:name=".CatalogActivity"
-            android:label="@string/catalog" 
-            android:icon="@drawable/catalog">
+            android:icon="@drawable/catalog"
+            android:label="@string/catalog" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -57,6 +54,17 @@
             android:label="Orders" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:label="Settings" 
+            android:icon="@drawable/settings">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

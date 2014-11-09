@@ -1,9 +1,12 @@
 package nz.co.guru.services.onlineorderdemo;
 
+import nz.co.guru.services.onlineorderdemo.settings.SettingsActivity;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 
 public class SplashScreenActivity extends Activity {
 
@@ -15,23 +18,36 @@ public class SplashScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
 
-        new Handler().postDelayed(new Runnable() {
+        // check if display splash screen is set
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean displaySplash = sharedPref.getBoolean(SettingsActivity.KEY_PREF_DISPLAY_SPLASH_SCREEN, true);
 
-            /*
-             * Showing splash screen with a timer. This will be useful when you
-             */
+        if (displaySplash) {
 
-            @Override
-            public void run() {
-                // This method will be executed once the timer is over
-                // Start your app main activity
-                final Intent i = new Intent(SplashScreenActivity.this, LoginActivity.class);
-                startActivity(i);
+            new Handler().postDelayed(new Runnable() {
 
-                // close this activity
-                finish();
-            }
-        }, SPLASH_TIME_OUT);
+                /*
+                 * Showing splash screen with a timer. This will be useful when you
+                 */
+
+                @Override
+                public void run() {
+                    // This method will be executed once the timer is over
+                    // Start your app main activity
+                    displayLoginScreen();
+                }
+            }, SPLASH_TIME_OUT);
+        }
+        else {
+            displayLoginScreen();
+        }
+    }
+
+    private void displayLoginScreen() {
+        final Intent i = new Intent(SplashScreenActivity.this, LoginActivity.class);
+        startActivity(i);
+        // close this activity
+        finish();
     }
 
 }

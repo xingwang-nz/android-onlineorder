@@ -3,6 +3,7 @@ package nz.co.guru.services.onlineorderdemo;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import nz.co.guru.services.onlineorderdemo.settings.SettingsActivity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -21,8 +22,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class CatalogActivity extends Activity {
-
-    public static final String PREFS_NAME = "LoginPrefs";
 
     private List<Product> mProductList;
 
@@ -138,10 +137,12 @@ public class CatalogActivity extends Activity {
                 Toast.makeText(this, "Under construction", Toast.LENGTH_LONG).show();
                 return true;
             case SETTINGS_ITEM_ID:
-                Toast.makeText(this, "Under construction", Toast.LENGTH_LONG).show();
+                // Toast.makeText(this, "Under construction", Toast.LENGTH_LONG).show();
+                final Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
+                startActivity(intent);
                 return true;
             case LOG_OUT_ITEM_ID:
-                final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                final SharedPreferences settings = getSharedPreferences(LoginActivity.PREFS_NAME, 0);
                 final SharedPreferences.Editor editor = settings.edit();
                 editor.remove("logged");
                 editor.commit();
