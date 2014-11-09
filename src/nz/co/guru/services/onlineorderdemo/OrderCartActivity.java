@@ -51,7 +51,7 @@ public class OrderCartActivity extends Activity {
         // Create the list
         listViewCatalog = (ListView) findViewById(R.id.ListViewCatalog);
         // productAdapter = new ProductAdapter(getApplicationContext(), ProductOrderHelper.getOrders(), getLayoutInflater(), true);
-        productAdapter = new ProductAdapter(this, ProductOrderHelper.getOrders(), getLayoutInflater());
+        productAdapter = new ProductAdapter(this, ProductOrderManager.getOrderCart(), getLayoutInflater());
 
         listViewCatalog.setAdapter(productAdapter);
         listViewCatalog.setOnItemClickListener(new OnItemClickListener() {
@@ -123,7 +123,7 @@ public class OrderCartActivity extends Activity {
                     dialog.dismiss();
 
                     final Intent intent = new Intent();
-                    intent.setData(Uri.parse(String.format("%s order(s) have been sent successfully.", ProductOrderHelper.getNumberOfOrder())));
+                    intent.setData(Uri.parse(String.format("%s order(s) have been sent successfully.", ProductOrderManager.getNumberOfOrder())));
                     setResult(RESULT_OK, intent);
                     finish();
 
@@ -172,10 +172,10 @@ public class OrderCartActivity extends Activity {
         switch (item.getItemId()) {
             case EDIT_ORDER_MENU_ITEM_ID:
 
-                final int productIndex = ProductOrderHelper.getProductIndex(product);
+                final int productIndex = ProductOrderManager.getProductIndex(product);
                 final Intent productDetailsIntent = new Intent(getBaseContext(), ProductDetailsActivity.class);
 
-                productDetailsIntent.putExtra(ProductOrderHelper.SELECTED_PRODUCT, productIndex);
+                productDetailsIntent.putExtra(ProductOrderManager.SELECTED_PRODUCT, productIndex);
                 startActivity(productDetailsIntent);
 
                 // productAdapter.notifyDataSetChanged();
@@ -184,7 +184,7 @@ public class OrderCartActivity extends Activity {
                 return true;
 
             case DELETE_ORDER_MENU_ITEM_ID:
-                ProductOrderHelper.deleteOrder(product);
+                ProductOrderManager.deleteOrder(product);
                 productAdapter.notifyDataSetChanged();
                 setProceeddOrderButtonStatus();
             default:
@@ -224,12 +224,12 @@ public class OrderCartActivity extends Activity {
         return super.onMenuOpened(featureId, menu);
     }
 
-    private static final int PLACE_ORDER_ACTION_ITEM_ID = 3;
+    private static final int SEND_ORDER_ACTION_ITEM_ID = 3;
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         super.onCreateOptionsMenu(menu);
-        final MenuItem mnu1 = menu.add(0, PLACE_ORDER_ACTION_ITEM_ID, 0, "Place Order");
+        final MenuItem mnu1 = menu.add(0, SEND_ORDER_ACTION_ITEM_ID, 0, "Send Order");
         {
             mnu1.setIcon(R.drawable.place_order);
             mnu1.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
@@ -243,8 +243,8 @@ public class OrderCartActivity extends Activity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 return true;
-            case PLACE_ORDER_ACTION_ITEM_ID:
-                if (ProductOrderHelper.hasOrders()) {
+            case SEND_ORDER_ACTION_ITEM_ID:
+                if (ProductOrderManager.hasOrders()) {
                     placeOrders();
                 }
                 return true;
@@ -254,7 +254,7 @@ public class OrderCartActivity extends Activity {
     }
 
     private void setProceeddOrderButtonStatus() {
-        proceeddOrderButton.setEnabled(ProductOrderHelper.hasOrders());
+        proceeddOrderButton.setEnabled(ProductOrderManager.hasOrders());
     }
 
 }

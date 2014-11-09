@@ -20,7 +20,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class CatalogActivity extends Activity {
 
     public static final String PREFS_NAME = "LoginPrefs";
 
@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         // Obtain a reference to the product catalog
-        mProductList = ProductOrderHelper.getCatalog(getResources());
+        mProductList = ProductOrderManager.getCatalog(getResources());
 
         // Create the list
         final ListView listViewCatalog = (ListView) findViewById(R.id.ListViewCatalog);
@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
             @Override
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 final Intent productDetailsIntent = new Intent(getBaseContext(), ProductDetailsActivity.class);
-                productDetailsIntent.putExtra(ProductOrderHelper.SELECTED_PRODUCT, position);
+                productDetailsIntent.putExtra(ProductOrderManager.SELECTED_PRODUCT, position);
                 startActivity(productDetailsIntent);
             }
         });
@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
     }
 
     private void viewOrders() {
-        if (ProductOrderHelper.hasOrders()) {
+        if (ProductOrderManager.hasOrders()) {
             final Intent viewShoppingCartIntent = new Intent(getBaseContext(), OrderCartActivity.class);
             startActivityForResult(viewShoppingCartIntent, PLACE_ORDER_REQ);
         }
@@ -90,29 +90,37 @@ public class MainActivity extends Activity {
 
     private static final int VIEW_ORDER_ACTION_ITEM_ID = 0;
 
-    private static final int SETTINGS_ITEM_ID = 1;
+    private static final int ORDER_HISTORY_ITEM_ID = 1;
 
-    private static final int LOG_OUT_ITEM_ID = 2;
+    private static final int SETTINGS_ITEM_ID = 2;
+
+    private static final int LOG_OUT_ITEM_ID = 3;
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         super.onCreateOptionsMenu(menu);
-        final MenuItem mnu1 = menu.add(0, VIEW_ORDER_ACTION_ITEM_ID, VIEW_ORDER_ACTION_ITEM_ID, "View Order");
+        final MenuItem viewOrderItem = menu.add(0, VIEW_ORDER_ACTION_ITEM_ID, VIEW_ORDER_ACTION_ITEM_ID, "View Order");
         {
-            mnu1.setIcon(R.drawable.view_order);
-            mnu1.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            viewOrderItem.setIcon(R.drawable.view_order);
+            viewOrderItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         }
 
-        final MenuItem mnu2 = menu.add(0, SETTINGS_ITEM_ID, SETTINGS_ITEM_ID, "Settings");
+        final MenuItem orderHistoryMenuItem = menu.add(0, ORDER_HISTORY_ITEM_ID, ORDER_HISTORY_ITEM_ID, "Order History");
         {
-            mnu2.setIcon(R.drawable.settings);
-            mnu2.setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            orderHistoryMenuItem.setIcon(R.drawable.order_history);
+            orderHistoryMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         }
 
-        final MenuItem mnu3 = menu.add(0, LOG_OUT_ITEM_ID, LOG_OUT_ITEM_ID, "Logout");
+        final MenuItem settingMenuItem = menu.add(0, SETTINGS_ITEM_ID, SETTINGS_ITEM_ID, "Settings");
         {
-            mnu3.setIcon(R.drawable.logout_middle);
-            mnu3.setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            settingMenuItem.setIcon(R.drawable.settings);
+            settingMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        }
+
+        final MenuItem logoutItem = menu.add(0, LOG_OUT_ITEM_ID, LOG_OUT_ITEM_ID, "Logout");
+        {
+            logoutItem.setIcon(R.drawable.logout_middle);
+            logoutItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         }
 
         return true;
@@ -126,8 +134,11 @@ public class MainActivity extends Activity {
             case VIEW_ORDER_ACTION_ITEM_ID:
                 viewOrders();
                 return true;
+            case ORDER_HISTORY_ITEM_ID:
+                Toast.makeText(this, "Under construction", Toast.LENGTH_LONG).show();
+                return true;
             case SETTINGS_ITEM_ID:
-                Toast.makeText(this, "Settings under construction", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Under construction", Toast.LENGTH_LONG).show();
                 return true;
             case LOG_OUT_ITEM_ID:
                 final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -166,7 +177,7 @@ public class MainActivity extends Activity {
     }
 
     private void notifyOrdersChange() {
-        viewOrdersCartButton.setEnabled(ProductOrderHelper.hasOrders());
+        viewOrdersCartButton.setEnabled(ProductOrderManager.hasOrders());
         productAdapter.notifyDataSetChanged();
     }
 
@@ -176,7 +187,7 @@ public class MainActivity extends Activity {
             if (resultCode == RESULT_OK) {
                 Toast.makeText(getBaseContext(), data.getData().toString(), Toast.LENGTH_SHORT).show();
                 // orders have been submited, reset all products
-                ProductOrderHelper.clearOrders();
+                ProductOrderManager.clearOrders();
                 notifyOrdersChange();
             }
 

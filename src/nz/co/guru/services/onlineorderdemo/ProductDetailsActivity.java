@@ -22,10 +22,10 @@ public class ProductDetailsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_details);
 
-        final List<Product> catalog = ProductOrderHelper.getCatalog(getResources());
-        final List<Product> cart = ProductOrderHelper.getOrders();
+        final List<Product> catalog = ProductOrderManager.getCatalog(getResources());
+        final List<Product> cart = ProductOrderManager.getOrderCart();
 
-        final int productIndex = getIntent().getExtras().getInt(ProductOrderHelper.SELECTED_PRODUCT);
+        final int productIndex = getIntent().getExtras().getInt(ProductOrderManager.SELECTED_PRODUCT);
         // final Product selectedProduct = (Product) getIntent().getExtras().getSerializable(ProductOrderHelper.SELECTED_PRODUCT);
         final Product selectedProduct = catalog.get(productIndex);
 
@@ -97,7 +97,7 @@ public class ProductDetailsActivity extends Activity {
 
     private void addOrder(final Product product) {
         product.setQuantity(getInputQuantity());
-        ProductOrderHelper.addOrder(product);
+        ProductOrderManager.addOrder(product);
         finish();
     }
 

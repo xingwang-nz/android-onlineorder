@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class Login extends Activity {
+public class LoginActivity extends Activity {
 
     public static final String PREFS_NAME = "LoginPrefs";
 
@@ -25,7 +25,7 @@ public class Login extends Activity {
          */
         final SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         if (settings.getString("logged", "").toString().equals("logged")) {
-            final Intent intent = new Intent(Login.this, MainActivity.class);
+            final Intent intent = new Intent(LoginActivity.this, CatalogActivity.class);
             startActivity(intent);
         }
 
@@ -49,7 +49,7 @@ public class Login extends Activity {
                         editor.putString("logged", "logged");
                         editor.commit();
 
-                        final Intent intent = new Intent(Login.this, MainActivity.class);
+                        final Intent intent = new Intent(LoginActivity.this, CatalogActivity.class);
                         startActivity(intent);
                     }
                     else {
