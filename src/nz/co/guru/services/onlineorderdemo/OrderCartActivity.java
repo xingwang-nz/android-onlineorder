@@ -20,6 +20,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class OrderCartActivity extends Activity {
 
@@ -111,6 +112,11 @@ public class OrderCartActivity extends Activity {
     }
 
     private void placeOrders() {
+        if (!ProductOrderManager.hasOrders()) {
+            Toast.makeText(this, "No products are selected in this order.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         final ProgressDialog dialog = ProgressDialog.show(OrderCartActivity.this, "Placing Orders", "Please wait...", true);
         new Thread(new Runnable() {
 
@@ -244,9 +250,7 @@ public class OrderCartActivity extends Activity {
             case android.R.id.home:
                 return true;
             case SEND_ORDER_ACTION_ITEM_ID:
-                if (ProductOrderManager.hasOrders()) {
-                    placeOrders();
-                }
+                placeOrders();
                 return true;
             default:
                 return true;
