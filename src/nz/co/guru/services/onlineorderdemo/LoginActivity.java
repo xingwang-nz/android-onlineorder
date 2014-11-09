@@ -19,16 +19,6 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
-        /*
-         * Check if we successfully logged in before.
-         * If we did, redirect to home page
-         */
-        final SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        if (settings.getString("logged", "").toString().equals("logged")) {
-            final Intent intent = new Intent(LoginActivity.this, CatalogActivity.class);
-            startActivity(intent);
-        }
-
         final Button b = (Button) findViewById(R.id.loginbutton);
         b.setOnClickListener(new OnClickListener() {
 
@@ -51,6 +41,7 @@ public class LoginActivity extends Activity {
 
                         final Intent intent = new Intent(LoginActivity.this, CatalogActivity.class);
                         startActivity(intent);
+                        finish();
                     }
                     else {
                         Toast.makeText(getBaseContext(), "invalid login", Toast.LENGTH_SHORT).show();
@@ -58,5 +49,17 @@ public class LoginActivity extends Activity {
                 }
             }
         });
+
+        /*
+         * Check if we successfully logged in before.
+         * If we did, redirect to home page
+         */
+        final SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        if (settings.getString("logged", "").toString().equals("logged")) {
+            final Intent intent = new Intent(LoginActivity.this, CatalogActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
     }
 }
