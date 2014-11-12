@@ -7,6 +7,7 @@
     <string name="product_catalog">Product Catalog</string>
     <string name="view_order_card">View Order</string>
     <string name="add_to_card">Add Order</string>
+    <string name="company_name">\@Copyright Guru Services Ltd</string>
 
     <style name="ButtonText">
 <!--         <item name="android:layout_width">fill_parent</item> -->
