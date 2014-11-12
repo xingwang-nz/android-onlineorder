@@ -5,7 +5,7 @@
     android:orientation="vertical" >
 
     <ListView
-        android:id="@+id/ListViewCatalog"
+        android:id="@+id/orderCartListView"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -14,31 +14,21 @@
     </ListView>
 
     <LinearLayout
-        android:id="@+id/LinearLayout01"
+        android:id="@+id/lnearLayout01"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:layout_margin="5dip"
         android:orientation="horizontal" >
 
-<!--         <Button -->
-<!--             android:id="@+id/removeOrderButton" -->
-<!--             style="@style/ButtonText" -->
-<!--             android:layout_width="wrap_content" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:background="@drawable/button_green" -->
-<!--             android:layout_gravity="left"  -->
-<!--             android:text="Remove Order" > -->
-<!--         </Button> -->
-
         <Button
-            android:id="@+id/proceedOrderButton"
+            android:id="@+id/sendOrderButton"
             style="@style/ButtonText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/button_green"
             android:layout_gravity="right" 
-            android:text="Send Orders" >
+            android:text="Send Order" >
         </Button>
     </LinearLayout>
 

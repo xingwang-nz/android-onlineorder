@@ -39,9 +39,7 @@ public class LoginActivity extends Activity {
                         editor.putString("logged", "logged");
                         editor.commit();
 
-                        final Intent intent = new Intent(LoginActivity.this, CatalogActivity.class);
-                        startActivity(intent);
-                        finish();
+                        startMainActivity();
                     }
                     else {
                         Toast.makeText(getBaseContext(), "invalid login", Toast.LENGTH_SHORT).show();
@@ -56,10 +54,15 @@ public class LoginActivity extends Activity {
          */
         final SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         if (settings.getString("logged", "").toString().equals("logged")) {
-            final Intent intent = new Intent(LoginActivity.this, CatalogActivity.class);
-            startActivity(intent);
-            finish();
+            startMainActivity();
         }
 
+    }
+
+    private void startMainActivity() {
+        // final Intent intent = new Intent(LoginActivity.this, CatalogActivity.class);
+        final Intent intent = new Intent(LoginActivity.this, CatalogActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

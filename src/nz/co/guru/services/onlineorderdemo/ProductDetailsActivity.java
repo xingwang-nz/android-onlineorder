@@ -1,7 +1,6 @@
 package nz.co.guru.services.onlineorderdemo;
 
-import java.util.List;
-
+import nz.co.guru.services.onlineorderdemo.model.ProductItem;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,45 +10,31 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ProductDetailsActivity extends Activity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_details);
 
-        final List<Product> catalog = ProductOrderManager.getCatalog(getResources());
-        final List<Product> cart = ProductOrderManager.getOrderCart();
+        final ProductItem selectedProduct = (ProductItem) getIntent().getExtras().getSerializable(ProductOrderManager2.SELECTED_PRODUCT_ITEM);
 
-        final int productIndex = getIntent().getExtras().getInt(ProductOrderManager.SELECTED_PRODUCT);
-        // final Product selectedProduct = (Product) getIntent().getExtras().getSerializable(ProductOrderHelper.SELECTED_PRODUCT);
-        final Product selectedProduct = catalog.get(productIndex);
+        final TextView productDescriptionTextView = (TextView) findViewById(R.id.productDetailDescriptionField);
+        productDescriptionTextView.setText(selectedProduct.getDescription());
 
-        // Set the proper image and text
-        final ImageView productImageView = (ImageView) findViewById(R.id.productDetailImageView);
-        productImageView.setImageDrawable(selectedProduct.getProductImage());
+        final TextView productDetailCodeField = (TextView) findViewById(R.id.productDetailCodeField);
+        productDetailCodeField.setText(String.valueOf(selectedProduct.getCode()));
 
-        final TextView productNoTextView = (TextView) findViewById(R.id.productDetailNoField);
-        productNoTextView.setText(selectedProduct.getReferenceNo());
-
-        final TextView productTitleTextView = (TextView) findViewById(R.id.productDetailNameField);
-        productTitleTextView.setText(selectedProduct.getName());
-
-        final TextView productDetailsDescriptionView = (TextView) findViewById(R.id.productDetailDescriptionField);
-        productDetailsDescriptionView.setText(selectedProduct.getDescription());
-
-        final TextView productDetailsPackingTextView = (TextView) findViewById(R.id.productDetailPackagingField);
-        productDetailsPackingTextView.setText(selectedProduct.getPackaging());
+        final TextView productDetailPriceField = (TextView) findViewById(R.id.productDetailPriceField);
+        productDetailPriceField.setText(selectedProduct.printPrice());
 
         final EditText quantityTextView = (EditText) findViewById(R.id.productDetailQuantityField);
         setQuantityInField(selectedProduct.getQuantity());
         quantityTextView.setFocusableInTouchMode(true);
 
-        final Button addToCartButton = (Button) findViewById(R.id.buttonAddOrder);
+        final Button addToCartButton = (Button) findViewById(R.id.addOrderButton);
         addToCartButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -62,6 +47,7 @@ public class ProductDetailsActivity extends Activity {
                     addOrder(selectedProduct);
                 }
             }
+
         });
 
         // check if selected product has quantity, if there is quantity, that means it is update
@@ -95,9 +81,9 @@ public class ProductDetailsActivity extends Activity {
 
     }
 
-    private void addOrder(final Product product) {
-        product.setQuantity(getInputQuantity());
-        ProductOrderManager.addOrder(product);
+    private void addOrder(final ProductItem selectedProduct) {
+        selectedProduct.setQuantity(getInputQuantity());
+        ProductOrderManager2.addOrder(selectedProduct);
         finish();
     }
 
@@ -118,4 +104,5 @@ public class ProductDetailsActivity extends Activity {
         }
 
     }
+
 }

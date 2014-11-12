@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dip" >
+
+    <TextView
+        android:id="@+id/catalogItemDescription"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="3dip"
+        android:textColor="#343434"
+        android:textSize="12sp" />
+
+    <!-- left bottom -->
+
+    <TextView
+        android:id="@+id/catalogItemOtherInfo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/catalogItemDescription"
+        android:layout_marginTop="3dip"
+        android:textColor="#343434"
+        android:textSize="12sp" />
+
+    <!-- Right-end  count -->
+
+    <TextView
+        android:id="@+id/catalogItemCounts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/catalogItemDescription"
+        android:layout_marginRight="5dip"
+        android:gravity="right"
+        android:textColor="#10bcc9"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>

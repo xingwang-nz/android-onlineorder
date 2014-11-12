@@ -1,7 +1,9 @@
 package nz.co.guru.services.onlineorderdemo;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
+import nz.co.guru.services.onlineorderdemo.model.ProductItem;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -10,39 +12,34 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class OrderCartActivity extends Activity {
 
-    // private List<Product> ;
+    private OrderCartListAdapter listAdapter;
 
-    private ProductAdapter productAdapter;
+    private Button sendOrderButton;
 
-    private Button proceeddOrderButton;
-
-    private ListView listViewCatalog;
+    private ListView orderCartListView;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_cart);
-
-        // orders = ProductOrderHelper.getOrders();
-
-        // Make sure to clear the selections
-        // for (int i = 0; i < orders.size(); i++) {
-        // orders.get(i).setSelected(false);
-        // }
 
         // action bar
         final ActionBar actionBar = getActionBar();
@@ -50,54 +47,25 @@ public class OrderCartActivity extends Activity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         // Create the list
-        listViewCatalog = (ListView) findViewById(R.id.ListViewCatalog);
-        // productAdapter = new ProductAdapter(getApplicationContext(), ProductOrderHelper.getOrders(), getLayoutInflater(), true);
-        productAdapter = new ProductAdapter(this, ProductOrderManager.getOrderCart(), getLayoutInflater());
+        orderCartListView = (ListView) findViewById(R.id.orderCartListView);
 
-        listViewCatalog.setAdapter(productAdapter);
-        listViewCatalog.setOnItemClickListener(new OnItemClickListener() {
+        // productAdapter = new ProductAdapter(getApplicationContext(), ProductOrderHelper.getOrders(), getLayoutInflater(), true);
+        listAdapter = new OrderCartListAdapter(this, ProductOrderManager2.getOrderCart(), getLayoutInflater());
+
+        orderCartListView.setAdapter(listAdapter);
+        orderCartListView.setOnItemClickListener(new OnItemClickListener() {
 
             @Override
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-
-                // final Product selectedProduct = orders.get(position);
-                // if (selectedProduct.isSelected()) {
-                // selectedProduct.setSelected(false);
-                // }
-                // else {
-                // selectedProduct.setSelected(true);
-                // }
-                //
-                // productAdapter.notifyDataSetInvalidated();
-
             }
         });
 
         // register ListView for context menu in ListActivity class
-        registerForContextMenu(listViewCatalog);
+        registerForContextMenu(orderCartListView);
 
-        // final Button removeButton = (Button) findViewById(R.id.removeOrderButton);
-        // removeButton.setOnClickListener(new OnClickListener() {
-        //
-        // @Override
-        // public void onClick(final View v) {
-        // // Loop through and remove all the products that are selected
-        // // Loop backwards so that the remove works correctly
-        // for (int i = orders.size() - 1; i >= 0; i--) {
-        //
-        // if (orders.get(i).isSelected()) {
-        // orders.remove(i);
-        // }
-        // }
-        // productAdapter.notifyDataSetChanged();
-        //
-        // setProceeddOrderButtonStatus();
-        // }
-        // });
-
-        proceeddOrderButton = (Button) findViewById(R.id.proceedOrderButton);
+        sendOrderButton = (Button) findViewById(R.id.sendOrderButton);
         // simulate calling send orders external services
-        proceeddOrderButton.setOnClickListener(new OnClickListener() {
+        sendOrderButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(final View v) {
@@ -107,17 +75,17 @@ public class OrderCartActivity extends Activity {
 
         });
 
-        setProceeddOrderButtonStatus();
+        setSendOrderButtonStatus();
 
     }
 
     private void placeOrders() {
-        if (!ProductOrderManager.hasOrders()) {
+        if (!ProductOrderManager2.hasOrders()) {
             Toast.makeText(this, "No products are selected in this order.", Toast.LENGTH_LONG).show();
             return;
         }
 
-        final ProgressDialog dialog = ProgressDialog.show(OrderCartActivity.this, "Placing Orders", "Please wait...", true);
+        final ProgressDialog dialog = ProgressDialog.show(OrderCartActivity.this, "Sending Order", "Please wait...", true);
         new Thread(new Runnable() {
 
             @Override
@@ -141,21 +109,21 @@ public class OrderCartActivity extends Activity {
         }).start();
     }
 
-    private static final int DELETE_ORDER_MENU_ITEM_ID = 1;
-
     private static final int EDIT_ORDER_MENU_ITEM_ID = 0;
+
+    private static final int DELETE_ORDER_MENU_ITEM_ID = 1;
 
     // long press listview context menu
     @Override
     public void onCreateContextMenu(final ContextMenu menu, final View view, final ContextMenu.ContextMenuInfo menuInfo) {
 
-        if (view.getId() == R.id.ListViewCatalog) {
+        if (view.getId() == R.id.orderCartListView) {
             final ListView lv = (ListView) view;
             final AdapterView.AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) menuInfo;
-            final Product product = (Product) lv.getItemAtPosition(acmi.position);
+            final ProductItem productItem = (ProductItem) lv.getItemAtPosition(acmi.position);
 
             menu.setQwertyMode(true);
-            menu.setHeaderTitle(product.getName());
+            menu.setHeaderTitle(productItem.getDescription());
             final MenuItem menuItem1 = menu.add(0, EDIT_ORDER_MENU_ITEM_ID, 0, "Edit");
             {
                 // menuItem1.setAlphabeticShortcut('a');
@@ -173,26 +141,21 @@ public class OrderCartActivity extends Activity {
     @Override
     public boolean onContextItemSelected(final MenuItem item) {
         final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        final Product product = (Product) listViewCatalog.getItemAtPosition(info.position);
+        final ProductItem productItem = (ProductItem) orderCartListView.getItemAtPosition(info.position);
 
         switch (item.getItemId()) {
             case EDIT_ORDER_MENU_ITEM_ID:
 
-                final int productIndex = ProductOrderManager.getProductIndex(product);
                 final Intent productDetailsIntent = new Intent(getBaseContext(), ProductDetailsActivity.class);
-
-                productDetailsIntent.putExtra(ProductOrderManager.SELECTED_PRODUCT, productIndex);
+                productDetailsIntent.putExtra(ProductOrderManager2.SELECTED_PRODUCT_ITEM, productItem);
                 startActivity(productDetailsIntent);
-
-                // productAdapter.notifyDataSetChanged();
-                // setProceeddOrderButtonStatus();
 
                 return true;
 
             case DELETE_ORDER_MENU_ITEM_ID:
-                ProductOrderManager.deleteOrder(product);
-                productAdapter.notifyDataSetChanged();
-                setProceeddOrderButtonStatus();
+                ProductOrderManager2.deleteOrder(productItem);
+                listAdapter.notifyDataSetChanged();
+                setSendOrderButtonStatus();
             default:
                 return super.onContextItemSelected(item);
 
@@ -202,8 +165,8 @@ public class OrderCartActivity extends Activity {
     @Override
     public void onRestart() {
         super.onRestart();
-        productAdapter.notifyDataSetChanged();
-        setProceeddOrderButtonStatus();
+        listAdapter.notifyDataSetChanged();
+        setSendOrderButtonStatus();
     }
 
     /**
@@ -257,8 +220,64 @@ public class OrderCartActivity extends Activity {
         }
     }
 
-    private void setProceeddOrderButtonStatus() {
-        proceeddOrderButton.setEnabled(ProductOrderManager.hasOrders());
+    private void setSendOrderButtonStatus() {
+        sendOrderButton.setEnabled(ProductOrderManager2.hasOrders());
+    }
+
+    private class OrderCartListAdapter extends BaseAdapter {
+
+        private final Activity parentActivity;
+
+        private final List<ProductItem> orderCart;
+
+        private final LayoutInflater inflater;
+
+        public OrderCartListAdapter(final Activity parentActivity, final List<ProductItem> orderCart, final LayoutInflater inflater) {
+            this.parentActivity = parentActivity;
+            this.orderCart = orderCart;
+            this.inflater = inflater;
+        }
+
+        @Override
+        public int getCount() {
+            return orderCart == null ? 0 : orderCart.size();
+        }
+
+        @Override
+        public Object getItem(final int position) {
+            return orderCart.get(position);
+        }
+
+        @Override
+        public long getItemId(final int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, final ViewGroup parent) {
+            if (convertView == null) {
+                convertView = inflater.inflate(R.layout.list_catalog_item, null);
+            }
+
+            final ProductItem productItem = (ProductItem) getItem(position);
+
+            final TextView productDescriptionView = (TextView) convertView.findViewById(R.id.catalogItemDescription);
+            productDescriptionView.setText(productItem.getDescription());
+
+            final TextView catalogItemOtherInfo = (TextView) convertView.findViewById(R.id.catalogItemOtherInfo);
+            catalogItemOtherInfo.setText(productItem.printPrice() + ("".equals(productItem.getNote()) ? "" : " (" + productItem.getNote() + ")"));
+
+            final TextView catalogItemCounts = (TextView) convertView.findViewById(R.id.catalogItemCounts);
+
+            if (productItem.getQuantity() > 0) {
+                catalogItemCounts.setText(String.valueOf(productItem.getQuantity()));
+            }
+            else {
+                catalogItemCounts.setText("");
+            }
+
+            return convertView;
+        }
     }
 
 }

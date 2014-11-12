@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/list_selector"
+    android:padding="5dip" >
+
+    <ImageView
+        android:id="@+id/catalogGroupImage"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:id="@+id/catalogGroupNameEmpty"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/catalogGroupImage"
+        android:text=" "
+        android:textColor="#040404"
+        android:textSize="6sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+    
+    <TextView
+        android:id="@+id/catalogGroupNameField"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/catalogGroupImage"
+        android:layout_below="@id/catalogGroupNameEmpty"
+        android:text="catalog name"
+        android:gravity="center_vertical"
+        android:textColor="#040404"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:paddingLeft="5dp"
+        android:typeface="sans" />
+    <!-- android:layout_alignTop="@id/catalogGroupThumbnail" -->
+
+</RelativeLayout>

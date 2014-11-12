@@ -1,8 +1,8 @@
 package nz.co.guru.services.onlineorderdemo;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
+import nz.co.guru.services.onlineorderdemo.model.ProductItem;
 import nz.co.guru.services.onlineorderdemo.settings.SettingsActivity;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -15,25 +15,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.Toast;
 
 public class CatalogActivity extends Activity {
 
-    private List<Product> mProductList;
+    private ExpandableListView catalogListView;
 
-    private ProductAdapter productAdapter;
+    private CatalogListAdapter catalogListAdapter;
+
+    private Button viewOrderButton;
 
     private static final int PLACE_ORDER_REQ = 0;
 
-    private Button viewOrdersCartButton;
-
-    /** Called when the activity is first created. */
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.catalog);
 
@@ -42,50 +40,49 @@ public class CatalogActivity extends Activity {
         // To make the application icon clickable, you need to call the setDisplayHomeAsUpEnabled()
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        // Obtain a reference to the product catalog
-        mProductList = ProductOrderManager.getCatalog(getResources());
+        catalogListView = (ExpandableListView) findViewById(R.id.catalogListView);
 
-        // Create the list
-        final ListView listViewCatalog = (ListView) findViewById(R.id.ListViewCatalog);
+        catalogListAdapter = new CatalogListAdapter(this, ProductOrderManager2.getCataloggroups());
 
-        // productAdapter = new ProductAdapter(getApplicationContext(), mProductList, getLayoutInflater(), false);
-        productAdapter = new ProductAdapter(this, mProductList, getLayoutInflater());
-        listViewCatalog.setAdapter(productAdapter);
+        catalogListView.setAdapter(catalogListAdapter);
 
-        listViewCatalog.setOnItemClickListener(new OnItemClickListener() {
+        for (int i = 0; i < catalogListAdapter.getGroupCount(); i++) {
+            catalogListView.expandGroup(i);
+        }
+
+        // on child click listener
+        catalogListView.setOnChildClickListener(new OnChildClickListener() {
 
             @Override
-            public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+            public boolean onChildClick(final ExpandableListView parent, final View v, final int groupPosition, final int childPosition, final long id) {
+
+                final ProductItem productItem = ProductOrderManager2.getProductByCode(id);
+
                 final Intent productDetailsIntent = new Intent(getBaseContext(), ProductDetailsActivity.class);
-                productDetailsIntent.putExtra(ProductOrderManager.SELECTED_PRODUCT, position);
+                productDetailsIntent.putExtra(ProductOrderManager2.SELECTED_PRODUCT_ITEM, productItem);
                 startActivity(productDetailsIntent);
+
+                return true;
             }
         });
 
-        viewOrdersCartButton = (Button) findViewById(R.id.buttonViewOrders);
-        viewOrdersCartButton.setOnClickListener(new OnClickListener() {
+        viewOrderButton = (Button) findViewById(R.id.viewOrderButton);
+        viewOrderButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(final View v) {
-                // final Intent viewShoppingCartIntent = new Intent(getBaseContext(), OrderCartActivity.class);
-                // startActivityForResult(viewShoppingCartIntent, PLACE_ORDER_REQ);
                 viewOrders();
             }
         });
 
         notifyOrdersChange();
-        // viewOrdersCartButton.setVisibility(View.GONE);
 
     }
 
-    private void viewOrders() {
-        if (ProductOrderManager.hasOrders()) {
-            final Intent viewShoppingCartIntent = new Intent(getBaseContext(), OrderCartActivity.class);
-            startActivityForResult(viewShoppingCartIntent, PLACE_ORDER_REQ);
-        }
-        else {
-            Toast.makeText(this, "Please select and add product to order first.", Toast.LENGTH_LONG).show();
-        }
+    private void notifyOrdersChange() {
+        viewOrderButton.setEnabled(ProductOrderManager2.hasOrders());
+        catalogListAdapter.notifyDataSetChanged();
+
     }
 
     private static final int VIEW_ORDER_ACTION_ITEM_ID = 0;
@@ -154,6 +151,30 @@ public class CatalogActivity extends Activity {
         }
     }
 
+    private void viewOrders() {
+
+        if (ProductOrderManager2.hasOrders()) {
+            final Intent intent = new Intent(getBaseContext(), OrderCartActivity.class);
+            startActivityForResult(intent, PLACE_ORDER_REQ);
+        }
+        else {
+            Toast.makeText(this, "Please select and add product to the order first.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        if (requestCode == PLACE_ORDER_REQ) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(getBaseContext(), data.getData().toString(), Toast.LENGTH_SHORT).show();
+                // orders have been submited, reset all products
+                ProductOrderManager2.clearOrders();
+                notifyOrdersChange();
+            }
+
+        }
+    }
+
     /**
      * on Android 3.0+, the icons in the menu are not shown by design. This is a design decision by Google.<br/>
      * The following is workaround telling the overflow menu to display the icons directly.
@@ -178,27 +199,18 @@ public class CatalogActivity extends Activity {
         return super.onMenuOpened(featureId, menu);
     }
 
-    private void notifyOrdersChange() {
-        viewOrdersCartButton.setEnabled(ProductOrderManager.hasOrders());
-        productAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (requestCode == PLACE_ORDER_REQ) {
-            if (resultCode == RESULT_OK) {
-                Toast.makeText(getBaseContext(), data.getData().toString(), Toast.LENGTH_SHORT).show();
-                // orders have been submited, reset all products
-                ProductOrderManager.clearOrders();
-                notifyOrdersChange();
-            }
-
-        }
-    }
-
     @Override
     public void onRestart() {
         super.onRestart();
         notifyOrdersChange();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ProductOrderManager2.clearOrders();
+        notifyOrdersChange();
+
+    }
+
 }
