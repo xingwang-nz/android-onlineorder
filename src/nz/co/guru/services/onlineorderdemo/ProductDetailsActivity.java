@@ -14,12 +14,14 @@ import android.widget.TextView;
 
 public class ProductDetailsActivity extends Activity {
 
+    private ProductItem selectedProduct;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_details);
 
-        final ProductItem selectedProduct = (ProductItem) getIntent().getExtras().getSerializable(ProductOrderManager.SELECTED_PRODUCT_ITEM);
+        selectedProduct = (ProductItem) getIntent().getExtras().getSerializable(ProductOrderManager.SELECTED_PRODUCT_ITEM);
 
         final TextView productDescriptionTextView = (TextView) findViewById(R.id.productDetailDescriptionField);
         productDescriptionTextView.setText(selectedProduct.getName());
@@ -74,13 +76,16 @@ public class ProductDetailsActivity extends Activity {
 
     @Override
     protected Dialog onCreateDialog(final int id) {
-        return new AlertDialog.Builder(this).setIcon(R.drawable.dialog_alert).setTitle("Zero quantity")
-                .setMessage("The product quantity is 0, this product won't be added to the orders, click OK to continue or Cancel to change the quantity")
+        return new AlertDialog.Builder(this)
+                .setIcon(R.drawable.dialog_alert)
+                .setTitle("Zero quantity")
+                .setMessage(
+                        "The product quantity is 0, this product won't be added to the order or will be removed from the order, click OK to continue or Cancel to change the quantity")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(final DialogInterface dialog, final int whichButton) {
-                        finish();
+                        addOrder(selectedProduct);
                     }
 
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

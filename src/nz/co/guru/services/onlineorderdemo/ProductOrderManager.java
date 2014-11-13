@@ -245,17 +245,14 @@ public class ProductOrderManager {
             return;
         }
 
+        productItem.setQuantity(selectedProduct.getQuantity());
         if (!orderCart.contains(productItem)) {
             if (selectedProduct.getQuantity() > 0) {
-                productItem.setQuantity(selectedProduct.getQuantity());
                 orderCart.add(productItem);
             }
         }
         else {
-            if (selectedProduct.getQuantity() > 0) {
-                productItem.setQuantity(selectedProduct.getQuantity());
-            }
-            else {
+            if (selectedProduct.getQuantity() <= 0) {
                 // the quantity has been reset to 0, remove this product from orders
                 orderCart.remove(productItem);
             }
