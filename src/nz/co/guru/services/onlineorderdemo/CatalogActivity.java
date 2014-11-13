@@ -13,15 +13,18 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class CatalogActivity extends Activity {
@@ -48,10 +51,19 @@ public class CatalogActivity extends Activity {
 
         catalogListView = (ExpandableListView) findViewById(R.id.catalogListView);
 
-        catalogListAdapter = new CatalogListAdapter(this, ProductOrderManager.getCataloggroups());
+        // banner
+        final LayoutInflater inflater = getLayoutInflater();
+        final View header = inflater.inflate(R.layout.banner, (ViewGroup) findViewById(R.id.bannerHeader));
+        catalogListView.addHeaderView(header);
+        // marquee text scrooling
+        final TextView bannerText = (TextView) findViewById(R.id.bannerText);
+        bannerText.setSelected(true);
+        bannerText.setText("Atria Spare Rib $6.5/KG, Hkscan Pork R/O bellies $6.5/KG, F/M U/10 Squid Tube $3.9/KG");
 
+        catalogListAdapter = new CatalogListAdapter(this, ProductOrderManager.getCataloggroups());
         catalogListView.setAdapter(catalogListAdapter);
 
+        // expand each group
         for (int i = 0; i < catalogListAdapter.getGroupCount(); i++) {
             catalogListView.expandGroup(i);
         }
