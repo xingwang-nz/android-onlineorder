@@ -44,6 +44,8 @@ public class ProductDetailsActivity extends Activity {
             productDetailNoteField.setText("");
         }
 
+        setQuantityInField(selectedProduct.getQuantity());
+
         final Button addToCartButton = (Button) findViewById(R.id.addOrderButton);
         addToCartButton.setOnClickListener(new OnClickListener() {
 
