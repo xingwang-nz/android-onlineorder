@@ -7,5 +7,13 @@
             android:key="prefDisplaySplashScreen"
             android:title="Display Splash Screen" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="Language" >
+        <ListPreference
+            android:entries="@array/listLanguage"
+            android:entryValues="@array/listLanguageCode"
+            android:key="prefLanguage"
+            android:title="Select Language" 
+            android:defaultValue="ENG"/>
+    </PreferenceCategory>
 
 </PreferenceScreen>

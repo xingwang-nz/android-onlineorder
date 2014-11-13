@@ -7,6 +7,8 @@ public class SettingsActivity extends Activity {
 
     public static final String KEY_PREF_DISPLAY_SPLASH_SCREEN = "prefDisplaySplashScreen";
 
+    public static final String KEY_PREF_LANGUAGE = "prefLanguage";
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(final Bundle savedInstanceState) {

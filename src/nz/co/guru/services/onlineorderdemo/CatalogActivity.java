@@ -2,13 +2,16 @@ package nz.co.guru.services.onlineorderdemo;
 
 import java.lang.reflect.Method;
 
+import nz.co.guru.services.onlineorderdemo.model.Language;
 import nz.co.guru.services.onlineorderdemo.model.ProductItem;
 import nz.co.guru.services.onlineorderdemo.settings.SettingsActivity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +21,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.Toast;
 
 public class CatalogActivity extends Activity {
@@ -29,6 +33,8 @@ public class CatalogActivity extends Activity {
     private Button viewOrderButton;
 
     private static final int PLACE_ORDER_REQ = 0;
+
+    private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -42,7 +48,7 @@ public class CatalogActivity extends Activity {
 
         catalogListView = (ExpandableListView) findViewById(R.id.catalogListView);
 
-        catalogListAdapter = new CatalogListAdapter(this, ProductOrderManager2.getCataloggroups());
+        catalogListAdapter = new CatalogListAdapter(this, ProductOrderManager.getCataloggroups());
 
         catalogListView.setAdapter(catalogListAdapter);
 
@@ -50,16 +56,24 @@ public class CatalogActivity extends Activity {
             catalogListView.expandGroup(i);
         }
 
+        catalogListView.setOnGroupClickListener(new OnGroupClickListener() {
+
+            @Override
+            public boolean onGroupClick(final ExpandableListView parent, final View convertView, final int groupPosition, final long id) {
+                return false;
+            }
+        });
+
         // on child click listener
         catalogListView.setOnChildClickListener(new OnChildClickListener() {
 
             @Override
             public boolean onChildClick(final ExpandableListView parent, final View v, final int groupPosition, final int childPosition, final long id) {
 
-                final ProductItem productItem = ProductOrderManager2.getProductByCode(id);
+                final ProductItem productItem = ProductOrderManager.getProductByCode(id);
 
                 final Intent productDetailsIntent = new Intent(getBaseContext(), ProductDetailsActivity.class);
-                productDetailsIntent.putExtra(ProductOrderManager2.SELECTED_PRODUCT_ITEM, productItem);
+                productDetailsIntent.putExtra(ProductOrderManager.SELECTED_PRODUCT_ITEM, productItem);
                 startActivity(productDetailsIntent);
 
                 return true;
@@ -75,13 +89,64 @@ public class CatalogActivity extends Activity {
             }
         });
 
+        // setup language
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        handleLanguageChange(getLanguageFromPreferenceSettings(sharedPreferences));
+
+        preferenceChangeListener = new OnSharedPreferenceChangeListener() {
+
+            @Override
+            public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
+                if (SettingsActivity.KEY_PREF_LANGUAGE.equals(key)) {
+                    handleLanguageChange(getLanguageFromPreferenceSettings(sharedPreferences));
+                }
+            }
+        };
+        sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+
         notifyOrdersChange();
 
     }
 
-    private void notifyOrdersChange() {
-        viewOrderButton.setEnabled(ProductOrderManager2.hasOrders());
+    private Language getLanguageFromPreferenceSettings(final SharedPreferences sharedPref) {
+        return Language.valueOf(sharedPref.getString(SettingsActivity.KEY_PREF_LANGUAGE, Language.ENG.toString()));
+    }
+
+    private void handleLanguageChange(final Language language) {
+        ProductOrderManager.setLanguage(language);
         catalogListAdapter.notifyDataSetChanged();
+    }
+
+    private void notifyOrdersChange() {
+        viewOrderButton.setEnabled(ProductOrderManager.hasOrders());
+        catalogListAdapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        notifyOrdersChange();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ProductOrderManager.clearOrders();
+        notifyOrdersChange();
+
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
 
     }
 
@@ -153,7 +218,7 @@ public class CatalogActivity extends Activity {
 
     private void viewOrders() {
 
-        if (ProductOrderManager2.hasOrders()) {
+        if (ProductOrderManager.hasOrders()) {
             final Intent intent = new Intent(getBaseContext(), OrderCartActivity.class);
             startActivityForResult(intent, PLACE_ORDER_REQ);
         }
@@ -168,7 +233,7 @@ public class CatalogActivity extends Activity {
             if (resultCode == RESULT_OK) {
                 Toast.makeText(getBaseContext(), data.getData().toString(), Toast.LENGTH_SHORT).show();
                 // orders have been submited, reset all products
-                ProductOrderManager2.clearOrders();
+                ProductOrderManager.clearOrders();
                 notifyOrdersChange();
             }
 
@@ -197,20 +262,6 @@ public class CatalogActivity extends Activity {
             }
         }
         return super.onMenuOpened(featureId, menu);
-    }
-
-    @Override
-    public void onRestart() {
-        super.onRestart();
-        notifyOrdersChange();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ProductOrderManager2.clearOrders();
-        notifyOrdersChange();
-
     }
 
 }

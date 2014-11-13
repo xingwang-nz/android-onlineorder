@@ -74,6 +74,10 @@ public class CatalogListAdapter extends BaseExpandableListAdapter {
         final TextView catalogNameField = (TextView) convertView.findViewById(R.id.catalogGroupNameField);
         catalogNameField.setText(catalogGroup.getName());
 
+        // final ImageView expandIcon = (ImageView) convertView.findViewById(R.id.expandCollapseImage);
+        // expandIcon.setImageResource(R.drawable.collapse);
+        // expandIcon.setTag(R.drawable.collapse);
+
         return convertView;
     }
 
@@ -86,11 +90,11 @@ public class CatalogListAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.list_catalog_item, null);
         }
 
-        final TextView productDescriptionView = (TextView) convertView.findViewById(R.id.catalogItemDescription);
-        productDescriptionView.setText(productItem.getDescription());
+        final TextView productDescriptionView = (TextView) convertView.findViewById(R.id.catalogItemName);
+        productDescriptionView.setText(productItem.getName());
 
         final TextView catalogItemOtherInfo = (TextView) convertView.findViewById(R.id.catalogItemOtherInfo);
-        catalogItemOtherInfo.setText(productItem.printPrice() + ("".equals(productItem.getNote()) ? "" : " (" + productItem.getNote() + ")"));
+        catalogItemOtherInfo.setText(productItem.printFullDescription());
 
         final TextView catalogItemCounts = (TextView) convertView.findViewById(R.id.catalogItemCounts);
 

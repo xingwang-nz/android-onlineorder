@@ -10,8 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:clickable="true"
-        android:dividerHeight="1dp"
-         />
+        android:dividerHeight="1dp" />
 
     <Button
         android:id="@+id/viewOrderButton"

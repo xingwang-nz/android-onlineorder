@@ -2,43 +2,43 @@ package nz.co.guru.services.onlineorderdemo.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProductItem implements Serializable {
 
     private long code;
 
-    private String description;
-
     private BigDecimal unitPrice;
 
     private ProductUnit unit;
 
-    private String note;
-
     private int quantity;
+
+    private String packaging;
+
+    private Language language = Language.ENG;
+
+    private Map<Language, String> nameMap;
+
+    private Map<Language, String> noteMap;
 
     public ProductItem() {
     }
 
-    public ProductItem(final long code, final String description, final ProductUnit unit, final BigDecimal unitPrice) {
-        this(code, description, unit, unitPrice, "");
+    public ProductItem(final long code, final Map<Language, String> nameMap, final ProductUnit unit, final BigDecimal unitPrice, final String packaging) {
+        this(code, nameMap, unit, unitPrice, packaging, new HashMap<Language, String>());
     }
 
-    public ProductItem(final long code, final String description, final ProductUnit unit, final BigDecimal unitPrice, final String note) {
+    public ProductItem(final long code, final Map<Language, String> nameMap, final ProductUnit unit, final BigDecimal unitPrice, final String packaging,
+            final Map<Language, String> noteMap) {
         this.code = code;
-        this.description = description;
         this.unit = unit;
         this.unitPrice = unitPrice;
-        this.note = note;
+        this.packaging = packaging;
+        this.noteMap = noteMap;
+        this.nameMap = nameMap;
 
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
     }
 
     public BigDecimal getUnitPrice() {
@@ -91,14 +91,6 @@ public class ProductItem implements Serializable {
         this.code = code;
     }
 
-    public String getNote() {
-        return note == null ? "" : note;
-    }
-
-    public void setNote(final String note) {
-        this.note = note;
-    }
-
     public int getQuantity() {
         return quantity;
     }
@@ -107,8 +99,76 @@ public class ProductItem implements Serializable {
         this.quantity = quantity;
     }
 
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(final Language language) {
+        this.language = language;
+    }
+
+    public Map<Language, String> getNameMap() {
+        return nameMap;
+    }
+
+    public void setNameMap(final Map<Language, String> nameMap) {
+        this.nameMap = nameMap;
+    }
+
+    public Map<Language, String> getNoteMap() {
+        return noteMap;
+    }
+
+    public void setNoteMap(final Map<Language, String> noteMap) {
+        this.noteMap = noteMap;
+    }
+
+    public String getPackaging() {
+        return packaging;
+    }
+
+    public void setPackaging(final String packaging) {
+        this.packaging = packaging;
+    }
+
     public String printPrice() {
         return "$" + unitPrice.toString() + "/" + unit.toString();
+    }
+
+    // Default to English
+    public String getName() {
+        return getStringForLanguage(nameMap);
+    }
+
+    public String getNote() {
+        return getStringForLanguage(noteMap) != null ? getStringForLanguage(noteMap) : "";
+    }
+
+    private String getStringForLanguage(final Map<Language, String> map) {
+        if (map.get(language) != null && !map.get(language).equals("")) {
+            return map.get(language);
+        }
+        else if (map.get(Language.ENG) != null && !map.get(Language.ENG).equals("")) {
+            return map.get(Language.ENG);
+        }
+        else {
+            return "";
+        }
+    }
+
+    public String printFullDescription() {
+        final StringBuilder descBuilder = new StringBuilder(printPrice());
+
+        if (packaging != null && !"".equals(packaging)) {
+            descBuilder.append(" ").append(packaging);
+        }
+
+        final String note = getNote();
+        if (note != null && !note.equals("")) {
+            descBuilder.append(" ").append(note);
+        }
+
+        return descBuilder.toString();
     }
 
 }

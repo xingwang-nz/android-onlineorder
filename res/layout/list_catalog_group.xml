@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     android:background="@drawable/list_selector"
+    android:orientation="horizontal"
     android:padding="5dip" >
 
     <ImageView
@@ -22,20 +22,30 @@
         android:textSize="6sp"
         android:textStyle="bold"
         android:typeface="sans" />
-    
+
     <TextView
         android:id="@+id/catalogGroupNameField"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/catalogGroupImage"
         android:layout_below="@id/catalogGroupNameEmpty"
-        android:text="catalog name"
+        android:layout_toRightOf="@id/catalogGroupImage"
         android:gravity="center_vertical"
+        android:paddingLeft="5dp"
+        android:text="catalog name"
         android:textColor="#040404"
         android:textSize="13sp"
         android:textStyle="bold"
-        android:paddingLeft="5dp"
         android:typeface="sans" />
     <!-- android:layout_alignTop="@id/catalogGroupThumbnail" -->
 
+
+    <!-- Right-end  count -->
+<!-- 
+    <ImageView
+        android:id="@+id/expandCollapseImage"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dip" />
+ -->
 </RelativeLayout>

@@ -19,10 +19,10 @@ public class ProductDetailsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_details);
 
-        final ProductItem selectedProduct = (ProductItem) getIntent().getExtras().getSerializable(ProductOrderManager2.SELECTED_PRODUCT_ITEM);
+        final ProductItem selectedProduct = (ProductItem) getIntent().getExtras().getSerializable(ProductOrderManager.SELECTED_PRODUCT_ITEM);
 
         final TextView productDescriptionTextView = (TextView) findViewById(R.id.productDetailDescriptionField);
-        productDescriptionTextView.setText(selectedProduct.getDescription());
+        productDescriptionTextView.setText(selectedProduct.getName());
 
         final TextView productDetailCodeField = (TextView) findViewById(R.id.productDetailCodeField);
         productDetailCodeField.setText(String.valueOf(selectedProduct.getCode()));
@@ -30,9 +30,19 @@ public class ProductDetailsActivity extends Activity {
         final TextView productDetailPriceField = (TextView) findViewById(R.id.productDetailPriceField);
         productDetailPriceField.setText(selectedProduct.printPrice());
 
-        final EditText quantityTextView = (EditText) findViewById(R.id.productDetailQuantityField);
-        setQuantityInField(selectedProduct.getQuantity());
-        quantityTextView.setFocusableInTouchMode(true);
+        final TextView productDetailPackagingField = (TextView) findViewById(R.id.productDetailPackagingField);
+        productDetailPackagingField.setText(selectedProduct.getPackaging());
+
+        final TextView productDetailNoteField = (TextView) findViewById(R.id.productDetailNoteField);
+
+        if (!"".equals(selectedProduct.getNote())) {
+            productDetailNoteField.setVisibility(View.VISIBLE);
+            productDetailNoteField.setText(selectedProduct.getNote());
+        }
+        else {
+            productDetailNoteField.setVisibility(View.GONE);
+            productDetailNoteField.setText("");
+        }
 
         final Button addToCartButton = (Button) findViewById(R.id.addOrderButton);
         addToCartButton.setOnClickListener(new OnClickListener() {
@@ -83,7 +93,7 @@ public class ProductDetailsActivity extends Activity {
 
     private void addOrder(final ProductItem selectedProduct) {
         selectedProduct.setQuantity(getInputQuantity());
-        ProductOrderManager2.addOrder(selectedProduct);
+        ProductOrderManager.addOrder(selectedProduct);
         finish();
     }
 

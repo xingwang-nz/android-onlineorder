@@ -50,7 +50,7 @@ public class OrderCartActivity extends Activity {
         orderCartListView = (ListView) findViewById(R.id.orderCartListView);
 
         // productAdapter = new ProductAdapter(getApplicationContext(), ProductOrderHelper.getOrders(), getLayoutInflater(), true);
-        listAdapter = new OrderCartListAdapter(this, ProductOrderManager2.getOrderCart(), getLayoutInflater());
+        listAdapter = new OrderCartListAdapter(this, ProductOrderManager.getOrderCart(), getLayoutInflater());
 
         orderCartListView.setAdapter(listAdapter);
         orderCartListView.setOnItemClickListener(new OnItemClickListener() {
@@ -80,7 +80,7 @@ public class OrderCartActivity extends Activity {
     }
 
     private void placeOrders() {
-        if (!ProductOrderManager2.hasOrders()) {
+        if (!ProductOrderManager.hasOrders()) {
             Toast.makeText(this, "No products are selected in this order.", Toast.LENGTH_LONG).show();
             return;
         }
@@ -123,7 +123,7 @@ public class OrderCartActivity extends Activity {
             final ProductItem productItem = (ProductItem) lv.getItemAtPosition(acmi.position);
 
             menu.setQwertyMode(true);
-            menu.setHeaderTitle(productItem.getDescription());
+            menu.setHeaderTitle(productItem.getName());
             final MenuItem menuItem1 = menu.add(0, EDIT_ORDER_MENU_ITEM_ID, 0, "Edit");
             {
                 // menuItem1.setAlphabeticShortcut('a');
@@ -147,13 +147,13 @@ public class OrderCartActivity extends Activity {
             case EDIT_ORDER_MENU_ITEM_ID:
 
                 final Intent productDetailsIntent = new Intent(getBaseContext(), ProductDetailsActivity.class);
-                productDetailsIntent.putExtra(ProductOrderManager2.SELECTED_PRODUCT_ITEM, productItem);
+                productDetailsIntent.putExtra(ProductOrderManager.SELECTED_PRODUCT_ITEM, productItem);
                 startActivity(productDetailsIntent);
 
                 return true;
 
             case DELETE_ORDER_MENU_ITEM_ID:
-                ProductOrderManager2.deleteOrder(productItem);
+                ProductOrderManager.deleteOrder(productItem);
                 listAdapter.notifyDataSetChanged();
                 setSendOrderButtonStatus();
             default:
@@ -221,7 +221,7 @@ public class OrderCartActivity extends Activity {
     }
 
     private void setSendOrderButtonStatus() {
-        sendOrderButton.setEnabled(ProductOrderManager2.hasOrders());
+        sendOrderButton.setEnabled(ProductOrderManager.hasOrders());
     }
 
     private class OrderCartListAdapter extends BaseAdapter {
@@ -261,11 +261,11 @@ public class OrderCartActivity extends Activity {
 
             final ProductItem productItem = (ProductItem) getItem(position);
 
-            final TextView productDescriptionView = (TextView) convertView.findViewById(R.id.catalogItemDescription);
-            productDescriptionView.setText(productItem.getDescription());
+            final TextView productDescriptionView = (TextView) convertView.findViewById(R.id.catalogItemName);
+            productDescriptionView.setText(productItem.getName());
 
             final TextView catalogItemOtherInfo = (TextView) convertView.findViewById(R.id.catalogItemOtherInfo);
-            catalogItemOtherInfo.setText(productItem.printPrice() + ("".equals(productItem.getNote()) ? "" : " (" + productItem.getNote() + ")"));
+            catalogItemOtherInfo.setText(productItem.printFullDescription());
 
             final TextView catalogItemCounts = (TextView) convertView.findViewById(R.id.catalogItemCounts);
 
