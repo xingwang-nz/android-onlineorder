@@ -98,9 +98,9 @@ public class CatalogListAdapter extends BaseExpandableListAdapter {
         catalogItemOtherInfo.setText(productItem.printFullDescription());
 
         if (productItem.isSpecial()) {
-            int color = Color.parseColor("#ff4500");
-            productNameView.setTextColor(color);
-            catalogItemOtherInfo.setTextColor(color);
+            final int color = Color.parseColor("#ff4500");
+            // productNameView.setTextColor(color);
+            // catalogItemOtherInfo.setTextColor(color);
         }
 
         final TextView catalogItemCounts = (TextView) convertView.findViewById(R.id.catalogItemCounts);
