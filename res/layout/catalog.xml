@@ -1,26 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/catalogListRootView"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:animateLayoutChanges="true"
     android:orientation="vertical" >
 
-    <ExpandableListView
-        android:id="@+id/catalogListView"
+    <LinearLayout
+        android:id="@+id/catalogListLayout"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:clickable="true"
-        android:dividerHeight="1dp" />
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/viewOrderButton"
-        style="@style/ButtonText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_margin="3dp"
-        android:background="@drawable/button_green"
-        android:text="@string/view_order_card" >
-    </Button>
+        <ExpandableListView
+            android:id="@+id/catalogListView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:dividerHeight="1dp" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/viewOrderButton"
+            style="@style/ButtonText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_margin="3dp"
+            android:background="@drawable/button_green"
+            android:text="@string/view_order_card" >
+        </Button>
+    </LinearLayout>
+
+<!--     <LinearLayout -->
+<!--         android:id="@+id/addBannerLayout" -->
+<!--         android:layout_width="fill_parent" -->
+<!--         android:layout_height="wrap_content" -->
+<!--         android:layout_alignParentTop="true" -->
+<!--         android:orientation="vertical" > -->
+<!--     </LinearLayout> -->
+
+</FrameLayout>

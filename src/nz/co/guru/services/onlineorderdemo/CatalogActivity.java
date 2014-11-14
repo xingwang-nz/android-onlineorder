@@ -1,6 +1,8 @@
 package nz.co.guru.services.onlineorderdemo;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import nz.co.guru.services.onlineorderdemo.model.Language;
 import nz.co.guru.services.onlineorderdemo.model.ProductItem;
@@ -11,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,14 +23,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class CatalogActivity extends Activity {
+
+    private FrameLayout rootView;
 
     private ExpandableListView catalogListView;
 
@@ -35,30 +43,50 @@ public class CatalogActivity extends Activity {
 
     private Button viewOrderButton;
 
+    private ActionBar actionBar;
+
     private static final int PLACE_ORDER_REQ = 0;
 
+    private static final int ADD_BANNER_MAX_SHOW_TIME = 30000; // mili seconds
+
+    private boolean displayAdBanner = false;;
+
     private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
+
+    private View adBannerView;
+
+    final static int adAnimationStartYPoint = -200;
+
+    private boolean adBannerIsShown;
+
+    private List<ProductItem> specialOfferProducts = new ArrayList<ProductItem>();
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.catalog);
 
+        // catalog root view
+        rootView = (FrameLayout) findViewById(R.id.catalogListRootView);
+
         // action bar
-        final ActionBar actionBar = getActionBar();
+        actionBar = getActionBar();
         // To make the application icon clickable, you need to call the setDisplayHomeAsUpEnabled()
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         catalogListView = (ExpandableListView) findViewById(R.id.catalogListView);
 
-        // banner
-        final LayoutInflater inflater = getLayoutInflater();
-        final View header = inflater.inflate(R.layout.banner, (ViewGroup) findViewById(R.id.bannerHeader));
-        catalogListView.addHeaderView(header);
-        // marquee text scrooling
-        final TextView bannerText = (TextView) findViewById(R.id.bannerText);
-        bannerText.setSelected(true);
-        bannerText.setText("Atria Spare Rib $6.5/KG, Hkscan Pork R/O bellies $6.5/KG, F/M U/10 Squid Tube $3.9/KG");
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean displayAdSetting = sharedPref.getBoolean(SettingsActivity.KEY_PREF_DISPLAY_ADVERTISEMENT, true);
+
+        if (displayAdSetting) {
+            // create AD banner if there are special offers
+            specialOfferProducts = ProductOrderManager.getSpecialOfferProducts();
+            if (specialOfferProducts.size() > 0) {
+                displayAdBanner = true;
+                createADBanner();
+            }
+        }
 
         catalogListAdapter = new CatalogListAdapter(this, ProductOrderManager.getCataloggroups());
         catalogListView.setAdapter(catalogListAdapter);
@@ -120,6 +148,177 @@ public class CatalogActivity extends Activity {
 
     }
 
+    /**
+     * Create AD banner and setup touch handler
+     */
+    private void createADBanner() {
+
+        final LayoutInflater inflater = getLayoutInflater();
+        adBannerView = inflater.inflate(R.layout.banner, (ViewGroup) findViewById(R.id.addBanner));
+
+        // catalogListView.addHeaderView(addBannerView);
+
+        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+
+        rootView.addView(adBannerView, params);
+        // bring banner to front
+        adBannerView.bringToFront();
+        rootView.requestLayout();
+        rootView.invalidate();
+
+        setupBannerText();
+
+        // detect swipe
+        // final GestureDetector gestureDetector = new GestureDetector(this, new SimpleOnGestureListener() {
+        //
+        // @Override
+        // public boolean onSingleTapUp(final MotionEvent e) {
+        // return false;
+        // }
+        //
+        // @Override
+        // public void onShowPress(final MotionEvent e) {
+        // Log.d("onShowPress", "onShowPress");
+        // }
+        //
+        // @Override
+        // public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
+        // return false;
+        // }
+        //
+        // @Override
+        // public void onLongPress(final MotionEvent e) {
+        // Log.d("onLongPress", "onLongPress");
+        // }
+        //
+        // @Override
+        // public boolean onFling(final MotionEvent e1, final MotionEvent e2, final float velocityX, final float velocityY) {
+        // switch (getSlope(e1.getX(), e1.getY(), e2.getX(), e2.getY())) {
+        // case 1:
+        // // Log.d(LOGTAG, "top");
+        // return true;
+        // case 2:
+        // // Log.d(LOGTAG, "left");
+        // return true;
+        // case 3:
+        // // Log.d(LOGTAG, "down");
+        // return true;
+        // case 4:
+        // // Log.d(LOGTAG, "right");
+        // return true;
+        // }
+        // return false;
+        // }
+        //
+        // @Override
+        // public boolean onDown(final MotionEvent e) {
+        // return false;
+        // }
+        //
+        // private int getSlope(final float x1, final float y1, final float x2, final float y2) {
+        // final Double angle = Math.toDegrees(Math.atan2(y1 - y2, x2 - x1));
+        // if (angle > 45 && angle <= 135) {
+        // // top
+        // return 1;
+        // }
+        // if (angle >= 135 && angle < 180 || angle < -135 && angle > -180) {
+        // // left
+        // return 2;
+        // }
+        // if (angle < -45 && angle >= -135) {
+        // // down
+        // return 3;
+        // }
+        // if (angle >= -45 && angle <= 45) {
+        // // right
+        // return 4;
+        // }
+        // return 0;
+        // }
+        // });
+
+        // addBannerView.setOnTouchListener(new OnTouchListener() {
+        //
+        // @Override
+        // public boolean onTouch(final View view, final MotionEvent event) {
+        // return gestureDetector.onTouchEvent(event);
+        // }
+        // });
+
+        // final AlphaAnimation alphaAnimation = new AlphaAnimation(0, 1);
+        // alphaAnimation.setDuration(3000);
+        // alphaAnimation.setFillAfter(true);
+        // alphaAnimation.start();
+
+        animateShowAdBanner();
+
+    }
+
+    /**
+     * Show ad banner and start timer to hide it automatically in 30 seconds
+     */
+    private void animateShowAdBanner() {
+        final TranslateAnimation slideDownAnimation = new TranslateAnimation(0, 0, adAnimationStartYPoint, 0);
+        slideDownAnimation.setDuration(3000);
+        slideDownAnimation.setFillAfter(true);
+        adBannerIsShown = true;
+        adBannerView.startAnimation(slideDownAnimation);
+
+        final Handler myHandler = new Handler();
+        final Runnable removeHeaderRunnable = new Runnable() {
+
+            @Override
+            public void run() {
+                // catalogListView.removeHeaderView(header);
+
+                // fade away header
+                // final ObjectAnimator anim = ObjectAnimator.ofFloat(header, View.ALPHA, 0);
+                // anim.setDuration(10000);
+                // header.setHasTransientState(true);
+                // anim.addListener(new AnimatorListenerAdapter() {
+                //
+                // @Override
+                // public void onAnimationEnd(final Animator animation) {
+                // addBannerView.setAlpha(1);
+                // addBannerView.setHasTransientState(false);
+                // catalogListView.removeHeaderView(header);
+                // }
+                // });
+                // anim.start();
+
+                if (adBannerIsShown) {
+                    animateHideAdBanner();
+                }
+            }
+        };
+        myHandler.postDelayed(removeHeaderRunnable, ADD_BANNER_MAX_SHOW_TIME);
+    }
+
+    private void animateHideAdBanner() {
+        final TranslateAnimation slideUpAnimation = new TranslateAnimation(0, 0, 0, adAnimationStartYPoint);
+        slideUpAnimation.setDuration(3000);
+        slideUpAnimation.setFillAfter(true);
+        adBannerIsShown = false;
+        adBannerView.startAnimation(slideUpAnimation);
+    }
+
+    private void setupBannerText() {
+        // marquee text scrooling
+        final TextView bannerTextView = (TextView) findViewById(R.id.bannerText);
+        bannerTextView.setSelected(true);
+        final StringBuilder textBuilder = new StringBuilder();
+        int count = 1;
+        for (final ProductItem item : specialOfferProducts) {
+            textBuilder.append(item.getName()).append(" ").append(item.printPrice());
+            if (count != specialOfferProducts.size()) {
+                textBuilder.append(", ");
+                count++;
+            }
+        }
+        bannerTextView.setText(textBuilder.toString());
+    }
+
     private Language getLanguageFromPreferenceSettings(final SharedPreferences sharedPref) {
         return Language.valueOf(sharedPref.getString(SettingsActivity.KEY_PREF_LANGUAGE, Language.ENG.toString()));
     }
@@ -127,6 +326,9 @@ public class CatalogActivity extends Activity {
     private void handleLanguageChange(final Language language) {
         ProductOrderManager.setLanguage(language);
         catalogListAdapter.notifyDataSetChanged();
+        if (displayAdBanner) {
+            setupBannerText();
+        }
     }
 
     private void notifyOrdersChange() {
@@ -162,7 +364,7 @@ public class CatalogActivity extends Activity {
 
     }
 
-    private static final int VIEW_ORDER_ACTION_ITEM_ID = 0;
+    private static final int SPECIAL_OFFER_ID = 0;
 
     private static final int ORDER_HISTORY_ITEM_ID = 1;
 
@@ -173,10 +375,12 @@ public class CatalogActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         super.onCreateOptionsMenu(menu);
-        final MenuItem viewOrderItem = menu.add(0, VIEW_ORDER_ACTION_ITEM_ID, VIEW_ORDER_ACTION_ITEM_ID, "View Order");
-        {
-            viewOrderItem.setIcon(R.drawable.view_order);
-            viewOrderItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        if (displayAdBanner) {
+            final MenuItem viewOrderItem = menu.add(0, SPECIAL_OFFER_ID, SPECIAL_OFFER_ID, "View Order");
+            {
+                viewOrderItem.setIcon(R.drawable.special_offer);
+                viewOrderItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            }
         }
 
         final MenuItem orderHistoryMenuItem = menu.add(0, ORDER_HISTORY_ITEM_ID, ORDER_HISTORY_ITEM_ID, "Order History");
@@ -205,8 +409,13 @@ public class CatalogActivity extends Activity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 return true;
-            case VIEW_ORDER_ACTION_ITEM_ID:
-                viewOrders();
+            case SPECIAL_OFFER_ID:
+                if (adBannerIsShown) {
+                    animateHideAdBanner();
+                }
+                else {
+                    animateShowAdBanner();
+                }
                 return true;
             case ORDER_HISTORY_ITEM_ID:
                 Toast.makeText(this, "Under construction", Toast.LENGTH_LONG).show();

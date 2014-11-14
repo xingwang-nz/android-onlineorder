@@ -17,6 +17,8 @@ public class ProductItem implements Serializable {
 
     private String packaging;
 
+    private boolean isSpecial;
+
     private Language language = Language.ENG;
 
     private Map<Language, String> nameMap;
@@ -169,6 +171,14 @@ public class ProductItem implements Serializable {
         }
 
         return descBuilder.toString();
+    }
+
+    public boolean isSpecial() {
+        return isSpecial;
+    }
+
+    public void setSpecial(final boolean isSpecial) {
+        this.isSpecial = isSpecial;
     }
 
 }

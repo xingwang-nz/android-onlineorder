@@ -6,6 +6,10 @@
             android:defaultValue="true"
             android:key="prefDisplaySplashScreen"
             android:title="Display Splash Screen" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="prefDisplayAdvertisement"
+            android:title="Display Advertisement" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Language" >
         <ListPreference

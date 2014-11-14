@@ -90,7 +90,9 @@ public class ProductOrderManager {
         noteMap = new HashMap<Language, String>();
         noteMap.put(ENG, "Low Price");
         noteMap.put(CHN, "超低价");
-        group.addProduct(new ProductItem(33628, nameMap, ProductUnit.KG, new BigDecimal("4.60"), "FZN 13.60kg", noteMap));
+        ProductItem productItem = new ProductItem(33628, nameMap, ProductUnit.KG, new BigDecimal("4.60"), "FZN 13.60kg", noteMap);
+        productItem.setSpecial(true);
+        group.addProduct(productItem);
 
         nameMap = new HashMap<Language, String>();
         nameMap.put(ENG, "Hkscan Pork R/O bellies");
@@ -98,7 +100,9 @@ public class ProductOrderManager {
         noteMap = new HashMap<Language, String>();
         noteMap.put(ENG, "Lowest Price");
         noteMap.put(CHN, "市场最低价");
-        group.addProduct(new ProductItem(33725, nameMap, ProductUnit.KG, new BigDecimal("6.50"), "FZN V.W", noteMap));
+        productItem = new ProductItem(33725, nameMap, ProductUnit.KG, new BigDecimal("6.50"), "FZN V.W", noteMap);
+        productItem.setSpecial(true);
+        group.addProduct(productItem);
 
         nameMap = new HashMap<Language, String>();
         nameMap.put(ENG, "Hkscan Pork R/L mix bellies");
@@ -212,7 +216,9 @@ public class ProductOrderManager {
         noteMap = new HashMap<Language, String>();
         noteMap.put(ENG, "Lowesr price");
         noteMap.put(CHN, "市场最低价");
-        group.addProduct(new ProductItem(66220, nameMap, ProductUnit.KG, new BigDecimal("3.95"), "5kg Packed", noteMap));
+        productItem = new ProductItem(66220, nameMap, ProductUnit.KG, new BigDecimal("3.95"), "5kg Packed", noteMap);
+        productItem.setSpecial(true);
+        group.addProduct(productItem);
 
     }
 
@@ -287,5 +293,19 @@ public class ProductOrderManager {
                 productItem.setLanguage(language);
             }
         }
+    }
+
+    public static List<ProductItem> getSpecialOfferProducts() {
+        final List<ProductItem> items = new ArrayList<ProductItem>();
+
+        for (final CatalogGroup catalogGroup : catalogGroups) {
+            for (final ProductItem productItem : catalogGroup.getProducts()) {
+                if (productItem.isSpecial()) {
+                    items.add(productItem);
+                }
+            }
+        }
+
+        return Collections.unmodifiableList(items);
     }
 }

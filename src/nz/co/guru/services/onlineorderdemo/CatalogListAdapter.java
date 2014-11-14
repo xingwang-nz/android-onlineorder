@@ -5,6 +5,7 @@ import java.util.List;
 import nz.co.guru.services.onlineorderdemo.model.CatalogGroup;
 import nz.co.guru.services.onlineorderdemo.model.ProductItem;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,11 +91,17 @@ public class CatalogListAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.list_catalog_item, null);
         }
 
-        final TextView productDescriptionView = (TextView) convertView.findViewById(R.id.catalogItemName);
-        productDescriptionView.setText(productItem.getName());
+        final TextView productNameView = (TextView) convertView.findViewById(R.id.catalogItemName);
+        productNameView.setText(productItem.getName());
 
         final TextView catalogItemOtherInfo = (TextView) convertView.findViewById(R.id.catalogItemOtherInfo);
         catalogItemOtherInfo.setText(productItem.printFullDescription());
+
+        if (productItem.isSpecial()) {
+            int color = Color.parseColor("#ff4500");
+            productNameView.setTextColor(color);
+            catalogItemOtherInfo.setTextColor(color);
+        }
 
         final TextView catalogItemCounts = (TextView) convertView.findViewById(R.id.catalogItemCounts);
 
