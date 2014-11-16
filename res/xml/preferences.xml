@@ -2,14 +2,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory android:title="Start Up" >
-        <CheckBoxPreference
+        <nz.co.guru.services.onlineorderdemo.view.custom.CustomSwitchPreference
             android:defaultValue="true"
             android:key="prefDisplaySplashScreen"
-            android:title="Display Splash Screen" />
-        <CheckBoxPreference
+            android:title="Splash Screen" />
+        <nz.co.guru.services.onlineorderdemo.view.custom.CustomSwitchPreference
             android:defaultValue="true"
             android:key="prefDisplayAdvertisement"
-            android:title="Display Advertisement" />
+            android:title="Advertisement" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Language" >
         <ListPreference
