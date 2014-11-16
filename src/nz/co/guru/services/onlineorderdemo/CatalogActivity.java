@@ -47,11 +47,11 @@ public class CatalogActivity extends Activity {
 
     private static final int PLACE_ORDER_REQ = 0;
 
-    private static final int ADD_BANNER_MAX_SHOW_TIME = 30000; // mili seconds
-
     private boolean displayAdBanner = false;;
 
     private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
+
+    private List<ProductItem> specialOfferProducts = new ArrayList<ProductItem>();
 
     private View adBannerView;
 
@@ -59,7 +59,16 @@ public class CatalogActivity extends Activity {
 
     private boolean adBannerIsShown;
 
-    private List<ProductItem> specialOfferProducts = new ArrayList<ProductItem>();
+    private static final int adBannerAnimationDuration = 1000;
+
+    /**
+     * handler to hide the adBanner in 30 seconds
+     */
+    private Handler hideBannerHandler;
+
+    private Runnable hideBannerRunnable;
+
+    private static final int ADD_BANNER_MAX_SHOW_TIME = 30000; // mili seconds
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -260,13 +269,13 @@ public class CatalogActivity extends Activity {
      */
     private void animateShowAdBanner() {
         final TranslateAnimation slideDownAnimation = new TranslateAnimation(0, 0, adAnimationStartYPoint, 0);
-        slideDownAnimation.setDuration(3000);
+        slideDownAnimation.setDuration(adBannerAnimationDuration);
         slideDownAnimation.setFillAfter(true);
         adBannerIsShown = true;
         adBannerView.startAnimation(slideDownAnimation);
 
-        final Handler myHandler = new Handler();
-        final Runnable removeHeaderRunnable = new Runnable() {
+        hideBannerHandler = new Handler();
+        hideBannerRunnable = new Runnable() {
 
             @Override
             public void run() {
@@ -292,12 +301,12 @@ public class CatalogActivity extends Activity {
                 }
             }
         };
-        myHandler.postDelayed(removeHeaderRunnable, ADD_BANNER_MAX_SHOW_TIME);
+        hideBannerHandler.postDelayed(hideBannerRunnable, ADD_BANNER_MAX_SHOW_TIME);
     }
 
     private void animateHideAdBanner() {
         final TranslateAnimation slideUpAnimation = new TranslateAnimation(0, 0, 0, adAnimationStartYPoint);
-        slideUpAnimation.setDuration(3000);
+        slideUpAnimation.setDuration(adBannerAnimationDuration);
         slideUpAnimation.setFillAfter(true);
         adBannerIsShown = false;
         adBannerView.startAnimation(slideUpAnimation);
@@ -410,6 +419,11 @@ public class CatalogActivity extends Activity {
             case android.R.id.home:
                 return true;
             case SPECIAL_OFFER_ID:
+                if (hideBannerHandler != null && hideBannerRunnable != null) {
+                    hideBannerHandler.removeCallbacks(hideBannerRunnable);
+                    hideBannerRunnable = null;
+                    hideBannerHandler = null;
+                }
                 if (adBannerIsShown) {
                     animateHideAdBanner();
                 }
