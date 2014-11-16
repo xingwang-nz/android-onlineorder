@@ -30,7 +30,7 @@ public class CustomSwitchPreference extends SwitchPreference {
         // ViewGroup.LayoutParams.WRAP_CONTENT);
         // title.setLayoutParams(layoutParams);
         title.setSingleLine(false);
-        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
     }
 
 }
